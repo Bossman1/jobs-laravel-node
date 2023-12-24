@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -69,6 +70,57 @@ class UsersController extends Controller
         $json = json_decode(file_get_contents($path), true);
 
         return $json;
+    }
+
+
+
+    public  function userAuth(Request $request)
+    {
+
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+        $credentials = $request->only('email', 'password');
+
+        if($user = Auth::attempt($credentials)) {
+
+            return response([
+                'message'=>'you are logged in',
+                "userData" => auth()->user()
+            ], 200);
+        }
+        return response([
+            'message'=>'Invalid Credentials'
+        ], 401);
+    }
+
+
+    public function userRegister(Request $request)
+    {
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required'
+        ]);
+
+
+        $user = new User();
+        $user->name = $request->post('name');
+        $user->email = $request->post('email');
+        $user->password = bcrypt($request->post('password'));
+        if(   $user->save()){
+
+            return response([
+                'message' => $user
+            ], 200);
+        }
+        return response([
+            'message' => 'Registration failed'
+        ], 401);
+
+
     }
 
 }

@@ -25,3 +25,14 @@ Route::post('users', [\App\Http\Controllers\Api\UsersController::class, 'store']
 Route::get('users/{user}', [\App\Http\Controllers\Api\UsersController::class, 'show']);
 Route::put('users/{user}', [\App\Http\Controllers\Api\UsersController::class, 'update']);
 Route::delete('users/{user}', [\App\Http\Controllers\Api\UsersController::class, 'destroy']);
+
+Route::group(['middleware' => ['api']], function () {
+    Route::post('user-register', [\App\Http\Controllers\Api\UsersController::class, 'userRegister']);
+    Route::post('user-auth', [\App\Http\Controllers\Api\UsersController::class, 'userAuth']);
+});
+
+
+
+
+
+
