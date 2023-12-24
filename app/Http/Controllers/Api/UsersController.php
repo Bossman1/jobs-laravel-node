@@ -22,7 +22,7 @@ class UsersController extends Controller
     public function getUserById($id)
     {
         $user = User::findOrFail($id);
-        return  new UserResource($user);
+        return new UserResource($user);
     }
 
     /**
@@ -63,7 +63,6 @@ class UsersController extends Controller
     }
 
 
-
     public function getjson()
     {
         $path = storage_path() . "/app/public/json.json";
@@ -73,8 +72,7 @@ class UsersController extends Controller
     }
 
 
-
-    public  function userAuth(Request $request)
+    public function userAuth(Request $request)
     {
 
         $request->validate([
@@ -83,15 +81,15 @@ class UsersController extends Controller
         ]);
         $credentials = $request->only('email', 'password');
 
-        if($user = Auth::attempt($credentials)) {
+        if ($user = Auth::attempt($credentials)) {
 
             return response([
-                'message'=>'you are logged in',
+                'message' => 'you are logged in',
                 "userData" => auth()->user()
             ], 200);
         }
         return response([
-            'message'=>'Invalid Credentials'
+            'message' => 'Invalid Credentials'
         ], 401);
     }
 
@@ -110,11 +108,8 @@ class UsersController extends Controller
         $user->name = $request->post('name');
         $user->email = $request->post('email');
         $user->password = bcrypt($request->post('password'));
-        if(   $user->save()){
-
-            return response([
-                'message' => $user
-            ], 200);
+        if ($user->save()) {
+            return response($user, 200);
         }
         return response([
             'message' => 'Registration failed'
