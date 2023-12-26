@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
@@ -97,11 +98,23 @@ class UsersController extends Controller
     public function userRegister(Request $request)
     {
 
-        $request->validate([
+//         $validation =  $request->validate([
+//            'name' => 'required',
+//            'email' => 'required|email|unique:users,email',
+//            'password' => 'required'
+//        ]);
+
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required'
         ]);
+
+
+         if($validator->fails()){
+             return response(["data"=>["errors" => $validator->messages()]], 200);
+         }
 
 
         $user = new User();
@@ -109,7 +122,7 @@ class UsersController extends Controller
         $user->email = $request->post('email');
         $user->password = bcrypt($request->post('password'));
         if ($user->save()) {
-            return response($user, 200);
+            return response(["data" => $user], 200);
         }
         return response([
             'message' => 'Registration failed'
