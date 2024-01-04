@@ -82,16 +82,22 @@ class UsersController extends Controller
         ]);
         $credentials = $request->only('email', 'password');
 
-        if ($user = Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
 
-            return response([
+            return response(["data" => [
                 'message' => 'you are logged in',
                 "userData" => auth()->user()
-            ], 200);
+            ]], 200);
+
         }
-        return response([
-            'message' => 'Invalid Credentials'
-        ], 401);
+        return response(
+            ["data" =>
+                [
+                    "error" => [
+                        'message' => ['Invalid credentials']
+                    ]
+                ]
+            ], 200);
     }
 
 
@@ -112,9 +118,9 @@ class UsersController extends Controller
         ]);
 
 
-         if($validator->fails()){
-             return response(["data"=>["errors" => $validator->messages()]], 200);
-         }
+        if ($validator->fails()) {
+            return response(["data" => ["errors" => $validator->messages()]], 200);
+        }
 
 
         $user = new User();
